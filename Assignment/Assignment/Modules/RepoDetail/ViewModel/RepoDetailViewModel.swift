@@ -30,32 +30,36 @@ class RepoDetailViewModel: RepoDetailViewModelProtocol {
 
     static let limit = 3
     
-    var didFetchContributors: (() -> ())?
-    var didFetchComments: (() -> ())?
-    var didFetchIssues: (() -> ())?
+    var didFetchRepoDetail: (() -> ())?
 
-    var contributors: [RepoContributor]? {
-        didSet {
-            self.didFetchContributors?()
-        }
-    }
-    var comments: [RepoComment]? {
-        didSet {
-            self.didFetchComments?()
-        }
-    }
-    var issues: [RepoIssue]? {
-        didSet {
-            self.didFetchIssues?()
-        }
-    }
+    var contributors: [RepoContributor]?
+    var comments: [RepoComment]?
+    var issues: [RepoIssue]?
 
     required init(repo: String) {
         self.repo = repo
         apiClient = RepoDetailApiClient(api: GithubApiService.shared)
     }
     
-    func fetchContributors() {
+    func fetchRepoDetail() {
+        let dispatchQueue = DispatchQueue(label: "com.assignment.background", qos: .userInitiated, attributes: .concurrent)
+        let dispatchGroup = DispatchGroup()
+        
+        dispatchGroup.enter()
+        fetchContributors(dispatchGroup)
+        
+        dispatchGroup.enter()
+        fetchComments(dispatchGroup)
+        
+        dispatchGroup.enter()
+        fetchIssues(dispatchGroup)
+        
+        dispatchGroup.notify(queue: dispatchQueue) { [weak self] in
+            self?.didFetchRepoDetail?()
+        }
+    }
+    
+    private func fetchContributors(_ dispatchGroup: DispatchGroup) {
         apiClient.fetchContributors(repo: repo, limit: RepoDetailViewModel.limit) { [weak self] result in
             switch result {
             
@@ -66,10 +70,11 @@ class RepoDetailViewModel: RepoDetailViewModelProtocol {
                 debugPrint(error)
                 break
             }
+            dispatchGroup.leave()
         }
     }
     
-    func fetchComments() {
+    private func fetchComments(_ dispatchGroup: DispatchGroup) {
         apiClient.fetchComments(repo: repo, limit: RepoDetailViewModel.limit) { [weak self] result in
             switch result {
             
@@ -80,11 +85,12 @@ class RepoDetailViewModel: RepoDetailViewModelProtocol {
                 debugPrint(error)
                 break
             }
+            dispatchGroup.leave()
         }
 
     }
     
-    func fetchIssues() {
+    private func fetchIssues(_ dispatchGroup: DispatchGroup) {
         apiClient.fetchIssues(repo: repo, limit: RepoDetailViewModel.limit) { [weak self] result in
             switch result {
             
@@ -95,6 +101,7 @@ class RepoDetailViewModel: RepoDetailViewModelProtocol {
                 debugPrint(error)
                 break
             }
+            dispatchGroup.leave()
         }
     }
     

@@ -12,11 +12,7 @@ protocol RepoDetailViewModelProtocol {
     var contributors: [RepoContributor]? { get set }
     var comments: [RepoComment]? { get set }
     var issues: [RepoIssue]? { get set }
-    var didFetchContributors: (() -> ())? { get set }
-    var didFetchComments: (() -> ())? { get set }
-    var didFetchIssues: (() -> ())? { get set }
+    var didFetchRepoDetail: (() -> ())? { get set }
     init(repo: String)
-    func fetchContributors()
-    func fetchComments()
-    func fetchIssues()
+    func fetchRepoDetail()
 }

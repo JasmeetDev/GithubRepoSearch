@@ -36,21 +36,9 @@ class RepoDetailViewController: UIViewController {
         }
         viewModel = RepoDetailViewModel(repo: name)
         
-        viewModel.didFetchContributors = { [weak self] in
+        viewModel.didFetchRepoDetail = { [weak self] in
             DispatchQueue.main.async {
-                self?.repoDetailTableView.reloadSections(IndexSet(integer: 0), with: .none)
-            }
-        }
-        
-        viewModel.didFetchIssues = { [weak self]  in
-            DispatchQueue.main.async {
-                self?.repoDetailTableView.reloadSections(IndexSet(integer: 1), with: .none)
-            }
-        }
-
-        viewModel.didFetchComments = { [weak self] in
-            DispatchQueue.main.async {
-                self?.repoDetailTableView.reloadSections(IndexSet(integer: 2), with: .none)
+                self?.repoDetailTableView.reloadData()
             }
         }
 
@@ -58,9 +46,7 @@ class RepoDetailViewController: UIViewController {
     }
     
     private func fetchDetail() {
-        viewModel.fetchContributors()
-        viewModel.fetchComments()
-        viewModel.fetchIssues()
+        viewModel.fetchRepoDetail()
     }
 }
 
