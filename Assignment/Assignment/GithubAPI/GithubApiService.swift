@@ -35,7 +35,7 @@ public class GithubApiService: NSObject {
                                        url: URL,
                                        parameters: [String: Any]?,
                                        completion: @escaping (VDResult<T>) -> Void) {
-        debugPrint("API Request parametes: \(String(describing: baseRequest.parameters))")
+        debugPrint("API Request parameters: \(String(describing: baseRequest.parameters))")
         let request = self.buildRequest(with: baseRequest.requestType,
                                         url: url,
                                         parameters: parameters)
